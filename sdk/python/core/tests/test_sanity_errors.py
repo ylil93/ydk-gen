@@ -24,7 +24,7 @@ from ydk.models.ydktest import ydktest_sanity as ysanity
 from ydk.models.ydktest import ydktest_sanity_types as ysanity_types
 from ydk.providers import NetconfServiceProvider
 from ydk.types import Empty, Decimal64
-from ydk.errors import YError, YModelError, YServiceError
+from ydk.errors import YError, YModelError, YServiceError, YServiceProviderError, YInvalidArgumentError
 from ydk.models.ydktest.ydktest_sanity import YdkEnumIntTest
 
 from test_utils import assert_with_error
@@ -91,6 +91,9 @@ test_ylist_assignment_pattern = ''.join(["Attempt to assign value of '\[<ydk.mod
                                          "<ydk.models.ydktest.ydktest_sanity.[a-zA-Z\.]*Ldata object at [0-9a-z]+>\]' to YList ldata. ",
                                          "Please use list append or extend method."])
 
+test_raised_exception_invalid_filter = '''<netconf-state xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring">
+  <invalid/>
+</netconf-state>'''
 
 class SanityTest(unittest.TestCase):
 
@@ -204,6 +207,26 @@ class SanityTest(unittest.TestCase):
             elems.append(l)
         runner.one_list.ldata = elems
         self.crud.create(self.ncc, runner)
+
+    def test_raised_exception(self):
+        from ydk.path import NetconfSession
+        from ydk.path import Codec
+        from ydk.types import EncodingFormat
+
+        netconf_session = NetconfSession(address='127.0.0.1', username='admin', password='admin', port=12022)
+        c = Codec()
+        root = netconf_session.get_root_schema()
+
+        with self.assertRaises(YInvalidArgumentError):
+            rpc = root.create_rpc('invalid path')
+
+        rpc = root.create_rpc('ietf-netconf:edit-config')
+        data_node = rpc.get_input_node()
+        data_node.create_datanode('config', test_raised_exception_invalid_filter)
+        data_node.create_datanode('target/running')
+
+        with self.assertRaises(YServiceProviderError):
+            output_data = rpc(netconf_session)
 
 
 if __name__ == '__main__':

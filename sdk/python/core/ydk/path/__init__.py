@@ -17,16 +17,15 @@
 from ydk.ext.path import Annotation
 from ydk.ext.path import Capability
 from ydk.ext.path import Codec
-from ydk.ext.path import DataNode
 from ydk.ext.path import Repository
-from ydk.ext.path import RootSchemaNode
-from ydk.ext.path import Rpc
 from ydk.ext.path import SchemaNode
 from ydk.ext.path import Statement
 
+from .data_node import DataNode
+from .rpc import Rpc
+from .root_schema_node import RootSchemaNode
 from .sessions import NetconfSession
 from .sessions import RestconfSession
-
 
 
 __all__ = [ "Annotation",

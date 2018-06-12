@@ -18,7 +18,9 @@
 NetconfSession Python wrapper.
 """
 
+from ydk.path import RootSchemaNode
 from ydk.ext.path import NetconfSession as _NetconfSession
+from ydk.errors.error_handler import handle_runtime_error as _handle_error
 
 
 class NetconfSession(_NetconfSession):
@@ -32,19 +34,25 @@ class NetconfSession(_NetconfSession):
             timeout = -1
 
         if repo is None:
-            super(NetconfSession, self).__init__(address, username, password,
-                                                 port, protocol, on_demand,
-                                                 common_cache, timeout)
+            with _handle_error():
+                super(NetconfSession, self).__init__(address, username, password,
+                                                     port, protocol, on_demand,
+                                                     common_cache, timeout)
         else:
-            super(NetconfSession, self).__init__(repo, address, username,
-                                                 password, port, protocol,
-                                                 on_demand, timeout)
+            with _handle_error():
+                super(NetconfSession, self).__init__(repo, address, username,
+                                                     password, port, protocol,
+                                                     on_demand, timeout)
 
     def get_root_schema(self):
-        return super(NetconfSession, self).get_root_schema()
+        with _handle_error():
+            root_schema_node = super(NetconfSession, self).get_root_schema()
+            return RootSchemaNode(root_schema_node)
 
     def invoke(self, rpc):
-        return super(NetconfSession, self).invoke(rpc)
+        with _handle_error():
+            return super(NetconfSession, self).invoke(rpc)
 
     def get_capabilities(self):
-        return super(NetconfSession, self).get_capabilities()
+        with _handle_error():
+            return super(NetconfSession, self).get_capabilities()

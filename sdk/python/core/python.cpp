@@ -493,10 +493,10 @@ PYBIND11_MODULE(ydk_, ydk)
 
     class_<ydk::path::RootSchemaNode, shared_ptr<ydk::path::RootSchemaNode>>(path, "RootSchemaNode")
         .def("get_path", &ydk::path::RootSchemaNode::get_path, return_value_policy::reference)
-        .def("get_parent", &ydk::path::RootSchemaNode::get_parent, return_value_policy::reference)
         .def("find", &ydk::path::RootSchemaNode::find, return_value_policy::reference)
+        .def("get_parent", &ydk::path::RootSchemaNode::get_parent, return_value_policy::reference)
         .def("get_root", &ydk::path::RootSchemaNode::get_root, return_value_policy::reference)
-//      .def("get_children", &ydk::path::RootSchemaNode::get_children)
+        // .def("get_children", &ydk::path::RootSchemaNode::get_children)
         .def("create_datanode", (ydk::path::DataNode& (ydk::path::RootSchemaNode::*)(const string&)) &ydk::path::RootSchemaNode::create_datanode, return_value_policy::reference, arg("path"))
         .def("create_datanode", (ydk::path::DataNode& (ydk::path::RootSchemaNode::*)(const string&, const string&)) &ydk::path::RootSchemaNode::create_datanode, return_value_policy::reference, arg("path"), arg("value"))
         .def("create_rpc", &ydk::path::RootSchemaNode::create_rpc, arg("path"), return_value_policy::reference);
